@@ -14,6 +14,18 @@ const api_key = process.env.FAVQS_API_KEY || "YOUR_FAVQS_API_KEY"; // Replace wi
 app.use(cors()); // allow all origins for dev
 
 
+
+
+
+// ✅ Root route — health check
+app.get("/", (req, res) => {
+  res.send("🚀 Quotes API is live on Railway!");
+});
+
+
+
+
+
 // // Proxy for QOTD (no key required)
 // app.get("/api/qotd", async (req, res) => {
 //   try {
