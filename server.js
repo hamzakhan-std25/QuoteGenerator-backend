@@ -9,7 +9,6 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const api_key = process.env.FAVQS_API_KEY || "YOUR_FAVQS_API_KEY"; // Replace with your actual API key
 
 app.use(cors()); // allow all origins for dev
 
@@ -49,15 +48,31 @@ app.get("/api/quotes", async (req, res) => {
   if (page) url.searchParams.append("page", page);
 
   try {
+
+    console.log("API Key loaded?", !!process.env.FAVQS_API_KEY);
+    console.log("Using API key:", process.env.FAVQS_API_KEY);
+    console.log("Fetching:", url.toString());
+
     const response = await fetch(url, {
-      headers: { Authorization: `Token token="${api_key}"` },
+      headers: { Authorization: `Token token="${process.env.FAVQS_API_KEY}"` },
     });
+    if (!response.ok) {
+      
+      const text = await response.text();
+      console.error("FavQs error:", text);
+      // Throw an error with the status and text for better debugging
+      throw new Error(`FavQs error ${response.status}: ${text}`);
+      
+    }
     const data = await response.json();
-    
+
+
     res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch quotes" });
-  }
+  } catch (error) {
+    
+    console.error("Fetch error:", error.message);
+    res.status(500).json({ error: error.message });
+    }
 });
 
 
